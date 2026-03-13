@@ -1,0 +1,30 @@
+[providers.discord]
+token = "YOUR_DISCORD_BOT_TOKEN"
+default_channel = "123456789012345678"
+
+[daemon]
+port = 25294
+
+[[routes]]
+event = "session.*"
+filter = { tool = "omx", repo_name = "clawhip" }
+sink = "discord"
+channel = "123456789012345678"
+mention = "<@123456789012345678>"
+format = "compact"
+
+[[routes]]
+event = "tmux.*"
+filter = { session = "issue-123" }
+sink = "discord"
+channel = "123456789012345679"
+format = "alert"
+
+[monitors.tmux]
+enabled = true
+
+[[monitors.tmux.sessions]]
+name = "issue-123"
+keywords = ["error", "FAILED", "PR created", "complete"]
+stale_minutes = 30
+

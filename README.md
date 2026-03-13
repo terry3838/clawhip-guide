@@ -68,6 +68,9 @@ clawhip-guide/
 ├── 05_Resources/
 │   ├── 01-런타임-맵.md
 │   └── 02-학습-체크리스트.md
+├── examples/
+│   ├── config/
+│   └── payloads/
 ├── sections/
 │   ├── 01-overview.md
 │   ├── 02-install.md
@@ -96,6 +99,7 @@ clawhip-guide/
 | 운영 | `03_Operations/*` | 실제 알림 운영과 검증은 어떻게 하나? |
 | 실습 | `04_Labs/*` | 직접 실행하며 무엇을 확인해야 하나? |
 | 참고 자료 | `05_Resources/*` | 원본 소스와 학습 체크는 어디서 보나? |
+| 예제 | `examples/*` | sample config와 representative payload는 어떻게 생기나? |
 
 ---
 
@@ -157,6 +161,7 @@ clawhip-guide/
 - `clawhip/docs/native-event-contract.md`
 - `clawhip/docs/live-verification.md`
 - `clawhip/docs/memory-offload-guide.md`
+- `clawhip/examples`가 없으므로 이 저장소의 `examples/`를 학습용 샘플로 활용
 - `clawhip/src/cli.rs`
 - `clawhip/src/main.rs`
 - `clawhip/src/router.rs`

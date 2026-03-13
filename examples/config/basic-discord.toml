@@ -1,0 +1,15 @@
+[providers.discord]
+token = "YOUR_DISCORD_BOT_TOKEN"
+default_channel = "123456789012345678"
+
+[daemon]
+port = 25294
+
+[[routes]]
+event = "github.*"
+filter = { repo = "clawhip" }
+sink = "discord"
+channel = "123456789012345678"
+mention = "<@123456789012345678>"
+format = "compact"
+
