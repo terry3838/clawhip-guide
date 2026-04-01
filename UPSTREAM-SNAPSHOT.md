@@ -11,6 +11,17 @@
 
 > **⭐ Optional support:** the interactive repo-local install paths (`./install.sh` and `clawhip install` from a clone) can offer to star this repo after a successful install when `gh` is installed and authenticated. Skip it with `--skip-star-prompt` or `CLAWHIP_SKIP_STAR_PROMPT=1`.
 
+## recent upstream commits
+
+- `098ecf6 release: clawhip v0.5.0`
+- `fbb3998 Implement Discord retry resilience and batched CI notifications (#88)`
+- `f2b61ed chore: bump version to 0.5.0`
+- `90ca553 Preserve stable ingress identifiers across normalization and enqueue responses (#82)`
+- `0c18f1e Fix GitHub polling for private repos (#81)`
+- `2462cb1 Merge pull request #79 from Yeachan-Heo/feat/issue-65-native-event-contract-polish`
+- `810e669 Unify native OMC/OMX event contract routing`
+- `435ec4a Merge pull request #78 from Yeachan-Heo/fix/issue-64-dev-format-fix`
+
 ## top-level structure
 
 - `.omx/`
