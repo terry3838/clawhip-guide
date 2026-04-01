@@ -176,3 +176,22 @@ clawhip-guide/
 **운영 런타임으로 이해하고 실습하는 한국어 학습 레포**로 설계합니다.
 핵심은 “설치 → 이벤트 흐름 → 운영 연동 → 검증”의 학습 루프를
 선명하게 만드는 것입니다.
+
+<!-- GUIDE_SYNC:START -->
+## 자동 동기화 상태
+
+- origin repo: `clawhip`
+- latest source commit: `098ecf6b01d7`
+- sync mode: `no-change`
+- 영향 분류: 일반 변경
+
+### 이번 반영 포인트
+
+이번 싸이클에서는 origin 변경이 없어 guide 본문은 유지했고, 동기화 기준점만 재확인했습니다.
+
+### 변경 파일 샘플
+
+- 이번 싸이클에서는 신규 변경 파일이 없습니다.
+
+> 이 블록은 guide sync가 자동 갱신합니다.
+<!-- GUIDE_SYNC:END -->

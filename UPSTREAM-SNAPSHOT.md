@@ -1,12 +1,15 @@
 # Upstream Snapshot — clawhip
 
 - source repo: `https://github.com/Yeachan-Heo/clawhip.git`
-- synced commit: `098ecf6b01d743a68a60d1ec77c0539b64e2f16a`
+- previous synced commit: `098ecf6b01d743a68a60d1ec77c0539b64e2f16a`
+- current synced commit: `098ecf6b01d743a68a60d1ec77c0539b64e2f16a`
+- sync mode: `no-change`
+- impact labels: 일반 변경
 - guide repo: `clawhip-guide`
 
 ## 원본 한줄 요약
 
-<p align="center"> <img src="assets/clawhip-mascot.jpg" width="400" alt="clawhip mascot" /> </p>
+> **⭐ Optional support:** the interactive repo-local install paths (`./install.sh` and `clawhip install` from a clone) can offer to star this repo after a successful install when `gh` is installed and authenticated. Skip it with `--skip-star-prompt` or `CLAWHIP_SKIP_STAR_PROMPT=1`.
 
 ## top-level structure
 
@@ -30,6 +33,10 @@
 - `skills/`
 - `src/`
 - `tests/`
+
+## changed files
+
+- 변경 파일 없음
 
 ## README excerpt
 
@@ -114,4 +121,44 @@ See [`skills/omc/`](skills/omc/) for ready-to-use scripts.
 Direct Slack/Discord notifications inside OMC/OMX should be treated as deprecated; emit native events and let clawhip own routing, mention policy, and formatting.
 
 ## Recipes
+
+### Dev-channel follow-up cron for Clawdbot
+
+One practical pattern is:
+
+```text
+system cron -> clawhip send -> Discord dev channel -> Clawdbot follows up on open PRs/issues
+```
+
+This works well when you want a lightweight scheduler that nudges your dev channels every 30 minutes without keeping a gateway/LLM session open just for reminders.
+
+Example follow-up script:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+# dev-followup.sh
+# Send a periodic follow-up to active dev channels.
+
+CHANNELS=(
+  "1480171113253175356|clawhip"
+  "1480171113253175357|gaebal-gajae-api"
+  "1480171113253175358|worker-ops"
+)
+
+MENTION="<@1465264645320474637>"
+
+for entry in "${CHANNELS[@]}"; do
+  IFS='|' read -r channel_id project_name <<< "$entry"
+
+  clawhip send \
+    --channel "$channel_id" \
+    --message "🔄 **[$project_name] Dev follow-up** $MENTION — check open PRs/issues, review open blockers, merge anything ready, and continue any stalled work."
+done
+```
+
+You can also send one-off nudges manually:
+
+```bash
 ```
