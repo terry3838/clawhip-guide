@@ -1,4 +1,3 @@
-# Overview Index
+# clawhip 개요
 
-- 대응 본문: `01_Foundations/01-clawhip-소개.md`
-- 초점: 정체성, 문제 정의, 주변 생태계
+초기 bootstrap 문서입니다.
