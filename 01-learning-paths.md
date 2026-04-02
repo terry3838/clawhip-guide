@@ -1,62 +1,412 @@
 # clawhip 학습 경로
 
-이 문서는 학습자의 목적에 따라 `clawhip`를 어떤 순서로 읽을지 제안합니다.
+이 문서는 `clawhip`를 처음 접하는 사람부터, 실제 운영/확장까지 이해하려는 사람을 위한 단계별 학습 순서를 정리한다.
 
-## 경로 A. 입문자
+핵심은 이거다:
 
-목표: clawhip의 정체성과 기본 설치/실행 흐름 이해
+- 입문자는 **daemon-first router** 로 이해해야 하고
+- 운영자는 **event → route → delivery 시스템** 으로 이해해야 하고
+- 확장하려는 사람은 **source / dispatcher / router / renderer / sink 구조** 로 읽어야 한다.
+
+---
+
+## 전체 로드맵
+
+### 1단계 — 제품 정체성 이해
+- clawhip이 무엇을 해결하는지 이해
+- daemon-first / typed event pipeline 개념 익히기
+- 설치 surface와 기본 명령 구분하기
+
+### 2단계 — 기본 운영 루프 체험
+- `status`, `send`, `tmux watch` 정도를 직접 써보기
+- 이벤트가 어떻게 채널 알림으로 바뀌는지 감 잡기
+
+### 3단계 — 내부 아키텍처 해부
+- source / dispatcher / router / renderer / sink 책임 분리 이해
+- native event contract와 route model 이해
+
+### 4단계 — 실전 운영 시나리오
+- GitHub/Git/tmux/OMC/OMX 연동 패턴 학습
+- live verification, memory offload, plugins까지 읽기
+
+---
+
+## 초급 — 입문자 경로
+
+목표: clawhip을 “Discord 알림 보내는 스크립트”가 아니라 **운영 이벤트 라우팅 런타임**으로 이해한다.
+
+### 읽을 순서
 
 1. `README.md`
 2. `00_Home/00_학습로드맵.md`
 3. `01_Foundations/01-clawhip-소개.md`
 4. `01_Foundations/02-설치와-첫-실행.md`
-5. `04_Labs/01-기본-설치-실습.md`
+5. `02-glossary.md`
 
-성공 기준:
+### 이 단계에서 꼭 이해할 것
 
-- daemon-first 구조를 한 문장으로 설명할 수 있다.
-- `clawhip status`, `clawhip send`, `clawhip install`의 역할을 구분할 수 있다.
+#### 1) daemon-first
 
-## 경로 B. 런타임 해부 트랙
+사용자가 매번 메시지를 수동으로 쏘는 게 아니라, daemon이 이벤트를 받아 처리한다.
 
-목표: event pipeline과 모듈 책임을 코드 기준으로 이해
+#### 2) typed event pipeline
+
+입력은 다양하지만 내부에선 정규화된 event family로 다룬다.
+
+예:
+- `git.commit`
+- `github.issue-opened`
+- `tmux.keyword`
+- `session.started`
+
+#### 3) clawhip의 정체
+
+clawhip은 알림의 **transport**만 하는 도구가 아니다.
+
+- 입력을 받는 ingress
+- 이벤트 표준화
+- 라우팅
+- 포맷팅
+- 채널 전송
+
+까지 맡는다.
+
+### 초급 실습
+
+#### 실습 1 — daemon health 확인
+
+```bash
+clawhip status
+```
+
+#### 실습 2 — custom event 보내기
+
+```bash
+clawhip send --channel YOUR_CHANNEL_ID --message "hello from clawhip"
+```
+
+### 초급 성공 기준
+
+- [ ] clawhip을 한 문장으로 설명할 수 있다
+- [ ] daemon-first 의미를 설명할 수 있다
+- [ ] `send`가 thin client ingress라는 걸 안다
+- [ ] route / sink / renderer가 각각 다르다는 감이 있다
+
+---
+
+## 초중급 — 설치와 첫 운영 루프
+
+목표: 설치/lifecycle 표면과 가장 기본적인 운영 흐름을 직접 다뤄본다.
+
+### 읽을 순서
+
+1. `01_Foundations/02-설치와-첫-실행.md`
+2. `04_Labs/01-기본-설치-실습.md`
+3. 원본 `README.md`의 install/lifecycle 부분
+4. `03_Operations/03-라이브-검증.md`
+
+### 이 단계에서 구분해야 하는 설치 경로
+
+#### 1) crates.io
+
+```bash
+cargo install clawhip
+```
+
+#### 2) prebuilt installer
+
+```bash
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Yeachan-Heo/clawhip/releases/latest/download/clawhip-installer.sh | sh
+```
+
+#### 3) repo-local install
+
+```bash
+./install.sh
+./install.sh --systemd
+```
+
+#### 4) runtime lifecycle commands
+
+```bash
+clawhip install
+clawhip update --restart
+clawhip uninstall
+```
+
+### 학습 포인트
+
+- repo-local install은 clone-local operator workflow에 맞다
+- `clawhip install/update/uninstall`은 운영 lifecycle을 위한 표면이다
+- interactive install 시 optional GitHub star prompt 같은 운영 UX도 포함된다
+
+### 초중급 실습
+
+#### 실습 1 — minimal command set 익히기
+
+```bash
+clawhip
+clawhip status
+clawhip plugin list
+```
+
+#### 실습 2 — memory scaffold 체험
+
+```bash
+clawhip memory init --project clawhip --channel discord-alerts --agent codex
+clawhip memory status --project clawhip --channel discord-alerts --agent codex
+```
+
+### 초중급 성공 기준
+
+- [ ] 설치 경로 4개를 구분할 수 있다
+- [ ] lifecycle commands가 왜 별도 표면인지 설명할 수 있다
+- [ ] `memory init/status`가 단순 문서 명령이 아니라 운영 scaffold라는 걸 안다
+
+---
+
+## 중급 — 아키텍처 해부 경로
+
+목표: 내부 파이프라인을 코드 기준으로 읽고 설명할 수 있게 된다.
+
+### 읽을 순서
 
 1. `02_Runtime-Internals/01-아키텍처.md`
 2. `02_Runtime-Internals/02-이벤트와-라우팅.md`
 3. `02_Runtime-Internals/03-CLI와-설정.md`
-4. `05_Resources/01-런타임-맵.md`
+4. 원본 `ARCHITECTURE.md`
+5. 원본 `docs/native-event-contract.md`
+6. `05_Resources/01-런타임-맵.md`
 
-성공 기준:
+### 중요한 구조
 
-- source / dispatcher / router / renderer / sink를 연결해 설명할 수 있다.
-- `src/main.rs`, `src/cli.rs`, `src/router.rs`, `src/source/*`를 읽는 순서를 안다.
+```text
+[CLI / webhook / git / GitHub / tmux]
+              -> [sources]
+              -> [mpsc queue]
+              -> [dispatcher]
+              -> [router -> renderer -> sink]
+              -> [Discord / Slack delivery]
+```
 
-## 경로 C. 운영자 트랙
+### 코드 읽기 추천 순서
 
-목표: 실제 Discord 운영, tmux 감시, GitHub/OMX 연동을 이해
+1. `src/cli.rs`
+2. `src/main.rs`
+3. `src/daemon.rs`
+4. `src/source/*`
+5. `src/dispatch.rs`
+6. `src/router.rs`
+7. `src/render/*`
+8. `src/sink/*`
+9. `src/event/*`
+
+### 중급에서 꼭 이해할 것
+
+#### 1) Source는 생산자다
+
+- `GitSource`
+- `GitHubSource`
+- `TmuxSource`
+
+#### 2) Dispatcher는 중앙 조정자다
+
+이벤트를 받아:
+1. route를 찾고
+2. render하고
+3. sink로 넘긴다
+
+#### 3) Router는 0..N deliveries를 만든다
+
+이벤트 하나가 여러 route에 동시에 매칭될 수 있다.
+
+#### 4) Renderer와 sink는 분리된다
+
+메시지 포맷과 실제 전송 계층이 분리되기 때문에, transport 변경이 메시지 포맷 로직을 오염시키지 않는다.
+
+### 중급 체크리스트
+
+- [ ] source / dispatcher / router / renderer / sink를 설명할 수 있다
+- [ ] 이벤트 하나가 여러 delivery로 fan-out될 수 있음을 안다
+- [ ] `src/main.rs`에서 `src/sink/*`까지 읽는 순서를 안다
+- [ ] native event contract가 왜 필요한지 설명할 수 있다
+
+---
+
+## 중상급 — 운영자 경로
+
+목표: 실제 dev/runtime 운영 시나리오에서 clawhip을 어떻게 배치하는지 이해한다.
+
+### 읽을 순서
 
 1. `03_Operations/01-GitHub-Git-tmux-연동.md`
 2. `03_Operations/02-Memory-Plugins-Skills.md`
 3. `03_Operations/03-라이브-검증.md`
 4. `04_Labs/02-라우트-설계-실습.md`
 5. `04_Labs/03-tmux-알림-실습.md`
+6. 원본 `docs/live-verification.md`
+7. 원본 `docs/memory-offload-guide.md`
 
-성공 기준:
+### 여기서 배우는 운영 패턴
 
-- 어떤 이벤트를 어떤 채널로 라우팅할지 설계할 수 있다.
-- tmux keyword/stale 감시와 live verification runbook을 활용할 수 있다.
+#### 1) GitHub/Git/tmux 통합
 
-## 경로 D. 기여/확장 트랙
+clawhip은 각 도구가 메시지를 직접 보내게 만드는 게 아니라, **이벤트를 clawhip로 모으게 만든다.**
 
-목표: 새로운 섹션, 다이어그램, 운영 예제를 확장
+#### 2) OMC/OMX native routing
+
+- 새 계약은 `session.*` 우선
+- `agent.*`는 하위 호환
+- 포맷/mention/채널 정책은 clawhip이 전담
+
+#### 3) live verification
+
+운영자가 봐야 하는 건 “설치됨”이 아니라 “preset families가 전부 실제 채널까지 간다”이다.
+
+#### 4) route 설계
+
+이벤트 family, repo filter, sink, mention, format를 조합해 운영 정책을 만든다.
+
+### 운영자 실습
+
+#### 실습 1 — tmux watch 붙이기
+
+```bash
+clawhip tmux watch -s issue-123 \
+  --channel YOUR_CHANNEL_ID \
+  --mention "<@your-user-id>" \
+  --keywords "error,PR created,complete"
+```
+
+#### 실습 2 — session contract 문서 읽고 route 설계하기
+
+- `docs/native-event-contract.md`
+- `04_Labs/02-라우트-설계-실습.md`
+
+#### 실습 3 — live verification runbook 체크하기
+
+- `docs/live-verification.md`
+- `scripts/live-verify-default-presets.sh`
+
+### 중상급 체크리스트
+
+- [ ] `session.*`를 새 기본 계약으로 이해한다
+- [ ] direct notification을 상위 도구가 직접 하는 대신 clawhip에 맡겨야 하는 이유를 설명할 수 있다
+- [ ] tmux keyword/stale 감시 시나리오를 설명할 수 있다
+- [ ] live verification이 왜 필수인지 안다
+
+---
+
+## 고급 — 확장/기여 경로
+
+목표: clawhip를 확장하거나, guide 자체를 더 깊게 보강할 수 있는 수준까지 간다.
+
+### 읽을 순서
 
 1. `03-repo-blueprint.md`
-2. `sections/` 인덱스 문서들
+2. `sections/*`
 3. `05_Resources/02-학습-체크리스트.md`
+4. 원본 `plugins/`
+5. 원본 `integrations/`
+6. 원본 `skills/`
+7. 원본 `tests/`
 
-추천 확장 작업:
+### 고급에서 볼 포인트
 
-- 명령별 walkthrough 추가
-- Mermaid 다이어그램 제작
-- release version diff 노트 작성
-- sample config / payload 예제 정리
+#### 1) plugin architecture
+
+각 plugin은 보통 이렇게 구성된다.
+
+- `plugin.toml`
+- `bridge.sh`
+
+즉 tool-specific bridge를 plugin 단위로 다룬다.
+
+#### 2) integrations
+
+- `integrations/git/*`
+- `integrations/tmux/*`
+
+실전 운영에서 바로 재사용 가능한 shell integration이 모여 있다.
+
+#### 3) skills
+
+- `skills/omc/`
+- `skills/omx/`
+- `skills/memory-offload/`
+
+이걸 보면 clawhip이 런타임일 뿐 아니라, 상위 agent/tool 생태계와도 엮여 있다는 걸 알 수 있다.
+
+#### 4) 버전 드리프트 읽기
+
+`ARCHITECTURE.md`는 `v0.4.0`, 현재 Cargo는 `0.5.0`이다. 즉 문서를 맹신하지 말고:
+
+- Cargo version
+- recent commits
+- README current behavior
+
+를 함께 봐야 한다.
+
+### 고급 체크리스트
+
+- [ ] plugin / integrations / skills의 역할 차이를 설명할 수 있다
+- [ ] `ARCHITECTURE.md`와 현재 릴리스 사이 버전 드리프트를 해석할 수 있다
+- [ ] 새로운 route/lab/diagram 문서를 어디에 추가해야 할지 감이 있다
+
+---
+
+## 목적별 추천 경로 요약
+
+### “난 처음 본다”
+1. `README.md`
+2. `01_Foundations/01-clawhip-소개.md`
+3. `01_Foundations/02-설치와-첫-실행.md`
+4. `02-glossary.md`
+
+### “실제로 써야 한다”
+1. `README.md`
+2. `04_Labs/01-기본-설치-실습.md`
+3. `03_Operations/03-라이브-검증.md`
+4. `03_Operations/01-GitHub-Git-tmux-연동.md`
+
+### “내부 구조가 궁금하다”
+1. `02_Runtime-Internals/*`
+2. 원본 `ARCHITECTURE.md`
+3. 원본 `docs/native-event-contract.md`
+4. `src/*`
+
+### “OMC/OMX/OpenClaw랑 붙이는 법이 궁금하다”
+1. `03_Operations/01-GitHub-Git-tmux-연동.md`
+2. `03_Operations/02-Memory-Plugins-Skills.md`
+3. 원본 `skills/omc/`, `skills/omx/`
+4. 원본 `docs/native-event-contract.md`
+
+---
+
+## 자주 하는 오해
+
+### 오해 1 — clawhip은 Discord 전송기다
+
+아니다. 라우터이자 event normalization/runtime 계층이다.
+
+### 오해 2 — 상위 도구가 직접 Slack/Discord를 쏘면 더 단순하다
+
+짧게는 단순하지만, 운영 정책은 금방 엉킨다. clawhip의 존재 이유가 바로 그 분리다.
+
+### 오해 3 — live verification은 옵션이다
+
+clawhip 철학상 거의 필수에 가깝다.
+
+### 오해 4 — memory offload는 부록이다
+
+문서 패턴이기도 하지만, 실제 운영 모델의 일부로 취급된다.
+
+---
+
+## 다음으로 읽을 문서
+
+- `02-glossary.md` — 용어 빠르게 정리
+- `03-repo-blueprint.md` — guide 확장 원칙
+- 원본 `docs/native-event-contract.md` — 계약의 핵심
+- 원본 `docs/live-verification.md` — 실전 검증 핵심
+- 원본 `docs/memory-offload-guide.md` — 문서/기억 운영 패턴
