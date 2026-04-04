@@ -305,7 +305,7 @@ clawhip memory status ...
 event = "github.*"
 filter = { repo = "clawhip" }
 sink = "discord"
-channel = "1480171113253175356"
+channel = "[REDACTED_PHONE]"
 format = "compact"
 ```
 

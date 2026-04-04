@@ -47,13 +47,13 @@
 ## changed files
 
 - `.omx/context/clawhip-build-20260308T103330Z.md`
-- `.omx/logs/hooks-2026-03-08.jsonl`
-- `.omx/logs/notify-fallback-2026-03-08.jsonl`
-- `.omx/logs/notify-fallback-2026-03-09.jsonl`
-- `.omx/logs/notify-hook-2026-03-08.jsonl`
-- `.omx/logs/omx-2026-03-08.jsonl`
-- `.omx/logs/tmux-hook-2026-03-08.jsonl`
-- `.omx/logs/turns-2026-03-08.jsonl`
+- `.omx/logs/hooks-[REDACTED_PHONE].jsonl`
+- `.omx/logs/notify-fallback-[REDACTED_PHONE].jsonl`
+- `.omx/logs/notify-fallback-[REDACTED_PHONE].jsonl`
+- `.omx/logs/notify-hook-[REDACTED_PHONE].jsonl`
+- `.omx/logs/omx-[REDACTED_PHONE].jsonl`
+- `.omx/logs/tmux-hook-[REDACTED_PHONE].jsonl`
+- `.omx/logs/turns-[REDACTED_PHONE].jsonl`
 - `.omx/metrics.json`
 - `.omx/notepad.md`
 - `.omx/plans/autopilot-impl.md`
@@ -64,8 +64,8 @@
 - `.omx/state/notify-fallback.pid`
 - `.omx/state/notify-hook-state.json`
 - `.omx/state/session.json`
-- `.omx/state/sessions/omx-1772965833622-69uz5f/AGENTS.md`
-- `.omx/state/sessions/omx-1772965833622-69uz5f/autopilot-state.json`
+- `.omx/state/sessions/omx-[REDACTED_PHONE]-69uz5f/AGENTS.md`
+- `.omx/state/sessions/omx-[REDACTED_PHONE]-69uz5f/autopilot-state.json`
 
 ## README excerpt
 
@@ -178,7 +178,7 @@ For OMC/OMX-integrated setups, clawhip is the source of truth for routing doctri
    [[routes]]
    event = "session.*"
    filter = { tool = "omx", repo_name = "clawhip" }
-   channel = "1480171113253175356"
+   channel = "[REDACTED_PHONE]"
    format = "compact"
    ```
    For OMC-native session traffic, keep the same event family and switch the tool filter to `omc` when needed.

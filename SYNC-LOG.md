@@ -1,3 +1,12 @@
+## public-doc-sanitizer 정리 완료
+- 날짜: 2026-04-04
+- 대상: markdown 문서(.md) 8개 + `.gitignore`, `.omx/` 런타임 산출물 정리
+- 치환 요약: 경로 0, 이메일 0, 전화번호 41
+- 변경 파일: `.gitignore`, `README.md`, `SYNC-LOG.md`, `UPSTREAM-SNAPSHOT.md`, `02-glossary.md`, `01_Foundations/02-설치와-첫-실행.md`, `sections/01-overview.md`, `obsidian/clawhip Guide/03 Glossary.md`, `obsidian/clawhip Guide/Foundations/설치와 첫 실행.md`
+- 사전 검증: dry-run 1회 → 실제 반영 1회 수행 완료
+- README 공개 감사: 절대경로/이메일/전화번호 패턴 없음(재확인 통과)
+- 비고: `.omx/` 샘플 경로는 공개 가이드 예시 목록으로 유지
+
 # Sync Log — clawhip
 
 ## latest cycle
@@ -28,13 +37,13 @@ origin 변경 파일을 기준으로 guide 문서의 관련 섹션을 다시 읽
 - docs/interesting dirs: docs/, skills/, plugins/, src/, tests/
 - changed file sample:
 - `.omx/context/clawhip-build-20260308T103330Z.md`
-- `.omx/logs/hooks-2026-03-08.jsonl`
-- `.omx/logs/notify-fallback-2026-03-08.jsonl`
-- `.omx/logs/notify-fallback-2026-03-09.jsonl`
-- `.omx/logs/notify-hook-2026-03-08.jsonl`
-- `.omx/logs/omx-2026-03-08.jsonl`
-- `.omx/logs/tmux-hook-2026-03-08.jsonl`
-- `.omx/logs/turns-2026-03-08.jsonl`
+- `.omx/logs/hooks-[REDACTED_PHONE].jsonl`
+- `.omx/logs/notify-fallback-[REDACTED_PHONE].jsonl`
+- `.omx/logs/notify-fallback-[REDACTED_PHONE].jsonl`
+- `.omx/logs/notify-hook-[REDACTED_PHONE].jsonl`
+- `.omx/logs/omx-[REDACTED_PHONE].jsonl`
+- `.omx/logs/tmux-hook-[REDACTED_PHONE].jsonl`
+- `.omx/logs/turns-[REDACTED_PHONE].jsonl`
 - `.omx/metrics.json`
 - `.omx/notepad.md`
 - `.omx/plans/autopilot-impl.md`
@@ -45,5 +54,5 @@ origin 변경 파일을 기준으로 guide 문서의 관련 섹션을 다시 읽
 - `.omx/state/notify-fallback.pid`
 - `.omx/state/notify-hook-state.json`
 - `.omx/state/session.json`
-- `.omx/state/sessions/omx-1772965833622-69uz5f/AGENTS.md`
-- `.omx/state/sessions/omx-1772965833622-69uz5f/autopilot-state.json`
+- `.omx/state/sessions/omx-[REDACTED_PHONE]-69uz5f/AGENTS.md`
+- `.omx/state/sessions/omx-[REDACTED_PHONE]-69uz5f/autopilot-state.json`
