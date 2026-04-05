@@ -9,9 +9,9 @@
 
 ## 이번 싸이클 판단
 
-- sync mode: `update`
-- impact labels: README/소개, 설치/설정, CLI/명령어, 문서 구조, 스킬/플러그인, 소스코드
-- 판단: origin 변경 파일을 기준으로 guide 문서의 관련 섹션을 다시 읽고 반영했습니다. 핵심 영향 영역: README/소개, 설치/설정, CLI/명령어, 문서 구조, 스킬/플러그인, 소스코드.
+- sync mode: `no-change`
+- impact labels: 일반 변경
+- 판단: 이번 싸이클에서는 origin 변경이 없어 guide 본문은 유지했고, 동기화 기준점만 재확인했습니다.
 
 ## 최근 upstream 커밋
 
@@ -53,23 +53,4 @@
 
 ## 변경 파일 샘플
 
-- `.omx/context/clawhip-build-20260308T103330Z.md`
-- `.omx/logs/hooks-[REDACTED_PHONE].jsonl`
-- `.omx/logs/notify-fallback-[REDACTED_PHONE].jsonl`
-- `.omx/logs/notify-fallback-[REDACTED_PHONE].jsonl`
-- `.omx/logs/notify-hook-[REDACTED_PHONE].jsonl`
-- `.omx/logs/omx-[REDACTED_PHONE].jsonl`
-- `.omx/logs/tmux-hook-[REDACTED_PHONE].jsonl`
-- `.omx/logs/turns-[REDACTED_PHONE].jsonl`
-- `.omx/metrics.json`
-- `.omx/notepad.md`
-- `.omx/plans/autopilot-impl.md`
-- `.omx/plans/autopilot-spec.md`
-- `.omx/state/auto-nudge-state.json`
-- `.omx/state/hud-state.json`
-- `.omx/state/notify-fallback-state.json`
-- `.omx/state/notify-fallback.pid`
-- `.omx/state/notify-hook-state.json`
-- `.omx/state/session.json`
-- `.omx/state/sessions/omx-[REDACTED_PHONE]-69uz5f/AGENTS.md`
-- `.omx/state/sessions/omx-[REDACTED_PHONE]-69uz5f/autopilot-state.json`
+- 변경 파일 없음

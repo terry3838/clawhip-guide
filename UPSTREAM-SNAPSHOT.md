@@ -1,10 +1,10 @@
 # Upstream Snapshot — clawhip
 
 - source repo: `https://github.com/Yeachan-Heo/clawhip.git`
-- previous synced commit: `098ecf6b01d743a68a60d1ec77c0539b64e2f16a`
+- previous synced commit: `818531d3002090c9a9d0528ad929f22df267d522`
 - current synced commit: `818531d3002090c9a9d0528ad929f22df267d522`
-- sync mode: `update`
-- impact labels: README/소개, 설치/설정, CLI/명령어, 문서 구조, 스킬/플러그인, 소스코드
+- sync mode: `no-change`
+- impact labels: 일반 변경
 - guide repo: `clawhip-guide`
 
 ## 원본 한줄 요약
@@ -46,26 +46,7 @@
 
 ## changed files
 
-- `.omx/context/clawhip-build-20260308T103330Z.md`
-- `.omx/logs/hooks-[REDACTED_PHONE].jsonl`
-- `.omx/logs/notify-fallback-[REDACTED_PHONE].jsonl`
-- `.omx/logs/notify-fallback-[REDACTED_PHONE].jsonl`
-- `.omx/logs/notify-hook-[REDACTED_PHONE].jsonl`
-- `.omx/logs/omx-[REDACTED_PHONE].jsonl`
-- `.omx/logs/tmux-hook-[REDACTED_PHONE].jsonl`
-- `.omx/logs/turns-[REDACTED_PHONE].jsonl`
-- `.omx/metrics.json`
-- `.omx/notepad.md`
-- `.omx/plans/autopilot-impl.md`
-- `.omx/plans/autopilot-spec.md`
-- `.omx/state/auto-nudge-state.json`
-- `.omx/state/hud-state.json`
-- `.omx/state/notify-fallback-state.json`
-- `.omx/state/notify-fallback.pid`
-- `.omx/state/notify-hook-state.json`
-- `.omx/state/session.json`
-- `.omx/state/sessions/omx-[REDACTED_PHONE]-69uz5f/AGENTS.md`
-- `.omx/state/sessions/omx-[REDACTED_PHONE]-69uz5f/autopilot-state.json`
+- 변경 파일 없음
 
 ## README excerpt
 
@@ -178,7 +159,7 @@ For OMC/OMX-integrated setups, clawhip is the source of truth for routing doctri
    [[routes]]
    event = "session.*"
    filter = { tool = "omx", repo_name = "clawhip" }
-   channel = "[REDACTED_PHONE]"
+   channel = "1480171113253175356"
    format = "compact"
    ```
    For OMC-native session traffic, keep the same event family and switch the tool filter to `omc` when needed.
