@@ -4,23 +4,23 @@
 
 - repo: `clawhip`
 - source: `https://github.com/Yeachan-Heo/clawhip.git`
-- latest synced commit: `818531d30020`
+- latest synced commit: `f22fb28a6105`
 - summary: > **⭐ Optional support:** the interactive repo-local install paths (`./install.sh` and `clawhip install` from a clone) can offer to star this repo after a successful install when `gh` is installed and authenticated. Skip it with `--skip-star-prompt` or `CLAWHIP_SKIP_STAR_PROMPT=1`.
 
 ## 이번 싸이클 판단
 
-- sync mode: `no-change`
-- impact labels: 일반 변경
-- 판단: 이번 싸이클에서는 origin 변경이 없어 guide 본문은 유지했고, 동기화 기준점만 재확인했습니다.
+- sync mode: `update`
+- impact labels: README/소개, 설치/설정, CLI/명령어, 문서 구조, 스킬/플러그인, 소스코드, 테스트/검증
+- 판단: origin 변경 파일을 기준으로 guide 문서의 관련 섹션을 다시 읽고 반영했습니다. 핵심 영향 영역: README/소개, 설치/설정, CLI/명령어, 문서 구조, 스킬/플러그인, 소스코드, 테스트/검증.
 
 ## 최근 upstream 커밋
 
-- `818531d Merge pull request #126 from Yeachan-Heo/release/0.5.1-prep`
-- `2bbf9a1 Merge origin/main into release/0.5.1-prep for main release sync`
-- `9986b08 Reduce clawhip session skills to launch mechanics`
-- `8677a89 Make clawhip docs the source of truth for OMC/OMX operators`
-- `3879e40 Fix OMX native hook bridge install layout for real plugin validation`
-- `679b9e7 Surface the native OMX bridge as the default release path`
+- `f22fb28 Merge remote-tracking branch 'origin/dev'`
+- `04d3335 chore: prepare 0.5.4 release`
+- `4f57245 Merge remote-tracking branch 'origin/dev'`
+- `d5e4f70 Merge pull request #149 from Yeachan-Heo/clawhip-issue-148-clean-embedded-state`
+- `931cf47 fix: remove embedded worktree and local agent state from repo`
+- `8c7e881 Merge pull request #144 from Yeachan-Heo/feat/omc-omx-hooks-dev`
 
 ## 확인한 원본 구조
 
@@ -33,6 +33,7 @@
 - `deploy/`
 - `dist-workspace.toml`
 - `docs/`
+- `hooks/`
 - `install.sh`
 - `integrations/`
 - `LICENSE`
@@ -53,4 +54,23 @@
 
 ## 변경 파일 샘플
 
-- 변경 파일 없음
+- `.github/workflows/release.yml`
+- `.gitignore`
+- `CHANGELOG.md`
+- `Cargo.lock`
+- `Cargo.toml`
+- `README.md`
+- `dist-workspace.toml`
+- `docs/canonical-contract-cleanup.md`
+- `hooks/omc/clawhip-session-init.mjs`
+- `hooks/omc/clawhip-session-stop.mjs`
+- `hooks/omx/clawhip-session-init.mjs`
+- `hooks/omx/clawhip-session-stop.mjs`
+- `skills/omx/create.sh`
+- `src/cli.rs`
+- `src/config.rs`
+- `src/cron.rs`
+- `src/daemon.rs`
+- `src/dispatch.rs`
+- `src/events.rs`
+- `src/hooks/mod.rs`

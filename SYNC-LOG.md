@@ -3,28 +3,47 @@
 ## latest cycle
 
 - previous source sha: `818531d3002090c9a9d0528ad929f22df267d522`
-- current source sha: `818531d3002090c9a9d0528ad929f22df267d522`
-- mode: `no-change`
-- impact labels: 일반 변경
+- current source sha: `f22fb28a61051798dababea058045ad578a6a8df`
+- mode: `update`
+- impact labels: README/소개, 설치/설정, CLI/명령어, 문서 구조, 스킬/플러그인, 소스코드, 테스트/검증
 
 ## decision
 
-이번 싸이클에서는 origin 변경이 없어 guide 본문은 유지했고, 동기화 기준점만 재확인했습니다.
+origin 변경 파일을 기준으로 guide 문서의 관련 섹션을 다시 읽고 반영했습니다. 핵심 영향 영역: README/소개, 설치/설정, CLI/명령어, 문서 구조, 스킬/플러그인, 소스코드, 테스트/검증.
 
 ## upstream commits reviewed
 
-- `818531d Merge pull request #126 from Yeachan-Heo/release/0.5.1-prep`
-- `2bbf9a1 Merge origin/main into release/0.5.1-prep for main release sync`
-- `9986b08 Reduce clawhip session skills to launch mechanics`
-- `8677a89 Make clawhip docs the source of truth for OMC/OMX operators`
-- `3879e40 Fix OMX native hook bridge install layout for real plugin validation`
-- `679b9e7 Surface the native OMX bridge as the default release path`
-- `286b775 Prepare the 0.5.1 branch metadata for a tagged release`
-- `96db180 feat: add managed cron jobs and native cron entrypoint (#116) (#117)`
+- `f22fb28 Merge remote-tracking branch 'origin/dev'`
+- `04d3335 chore: prepare 0.5.4 release`
+- `4f57245 Merge remote-tracking branch 'origin/dev'`
+- `d5e4f70 Merge pull request #149 from Yeachan-Heo/clawhip-issue-148-clean-embedded-state`
+- `931cf47 fix: remove embedded worktree and local agent state from repo`
+- `8c7e881 Merge pull request #144 from Yeachan-Heo/feat/omc-omx-hooks-dev`
+- `8a842dc fix: satisfy fmt and clippy for native hooks launch PR`
+- `3ac8e01 fix: custom event channel takes precedence over route/default channel (#145)`
 
 ## evidence
 
 - source remote: `https://github.com/Yeachan-Heo/clawhip.git`
 - docs/interesting dirs: docs/, skills/, plugins/, src/, tests/
 - changed file sample:
-- 변경 파일 없음
+- `.github/workflows/release.yml`
+- `.gitignore`
+- `CHANGELOG.md`
+- `Cargo.lock`
+- `Cargo.toml`
+- `README.md`
+- `dist-workspace.toml`
+- `docs/canonical-contract-cleanup.md`
+- `hooks/omc/clawhip-session-init.mjs`
+- `hooks/omc/clawhip-session-stop.mjs`
+- `hooks/omx/clawhip-session-init.mjs`
+- `hooks/omx/clawhip-session-stop.mjs`
+- `skills/omx/create.sh`
+- `src/cli.rs`
+- `src/config.rs`
+- `src/cron.rs`
+- `src/daemon.rs`
+- `src/dispatch.rs`
+- `src/events.rs`
+- `src/hooks/mod.rs`
