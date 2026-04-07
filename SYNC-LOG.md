@@ -2,14 +2,14 @@
 
 ## latest cycle
 
-- previous source sha: `818531d3002090c9a9d0528ad929f22df267d522`
+- previous source sha: `f22fb28a61051798dababea058045ad578a6a8df`
 - current source sha: `f22fb28a61051798dababea058045ad578a6a8df`
-- mode: `update`
-- impact labels: README/소개, 설치/설정, CLI/명령어, 문서 구조, 스킬/플러그인, 소스코드, 테스트/검증
+- mode: `no-change`
+- impact labels: 일반 변경
 
 ## decision
 
-origin 변경 파일을 기준으로 guide 문서의 관련 섹션을 다시 읽고 반영했습니다. 핵심 영향 영역: README/소개, 설치/설정, CLI/명령어, 문서 구조, 스킬/플러그인, 소스코드, 테스트/검증.
+이번 싸이클에서는 origin 변경이 없어 guide 본문은 유지했고, 동기화 기준점만 재확인했습니다.
 
 ## upstream commits reviewed
 
@@ -27,23 +27,4 @@ origin 변경 파일을 기준으로 guide 문서의 관련 섹션을 다시 읽
 - source remote: `https://github.com/Yeachan-Heo/clawhip.git`
 - docs/interesting dirs: docs/, skills/, plugins/, src/, tests/
 - changed file sample:
-- `.github/workflows/release.yml`
-- `.gitignore`
-- `CHANGELOG.md`
-- `Cargo.lock`
-- `Cargo.toml`
-- `README.md`
-- `dist-workspace.toml`
-- `docs/canonical-contract-cleanup.md`
-- `hooks/omc/clawhip-session-init.mjs`
-- `hooks/omc/clawhip-session-stop.mjs`
-- `hooks/omx/clawhip-session-init.mjs`
-- `hooks/omx/clawhip-session-stop.mjs`
-- `skills/omx/create.sh`
-- `src/cli.rs`
-- `src/config.rs`
-- `src/cron.rs`
-- `src/daemon.rs`
-- `src/dispatch.rs`
-- `src/events.rs`
-- `src/hooks/mod.rs`
+- 변경 파일 없음
