@@ -4,23 +4,23 @@
 
 - repo: `clawhip`
 - source: `https://github.com/Yeachan-Heo/clawhip.git`
-- latest synced commit: `f22fb28a6105`
+- latest synced commit: `c4eb931bcd2c`
 - summary: > **⭐ Optional support:** the interactive repo-local install paths (`./install.sh` and `clawhip install` from a clone) can offer to star this repo after a successful install when `gh` is installed and authenticated. Skip it with `--skip-star-prompt` or `CLAWHIP_SKIP_STAR_PROMPT=1`.
 
 ## 이번 싸이클 판단
 
-- sync mode: `no-change`
-- impact labels: 일반 변경
-- 판단: 이번 싸이클에서는 origin 변경이 없어 guide 본문은 유지했고, 동기화 기준점만 재확인했습니다.
+- sync mode: `update`
+- impact labels: README/소개, 설치/설정, CLI/명령어, 문서 구조, 스킬/플러그인, 소스코드, 테스트/검증
+- 판단: origin 변경 파일을 기준으로 guide 문서의 관련 섹션을 다시 읽고 반영했습니다. 핵심 영향 영역: README/소개, 설치/설정, CLI/명령어, 문서 구조, 스킬/플러그인, 소스코드, 테스트/검증.
 
 ## 최근 upstream 커밋
 
-- `f22fb28 Merge remote-tracking branch 'origin/dev'`
-- `04d3335 chore: prepare 0.5.4 release`
-- `4f57245 Merge remote-tracking branch 'origin/dev'`
-- `d5e4f70 Merge pull request #149 from Yeachan-Heo/clawhip-issue-148-clean-embedded-state`
-- `931cf47 fix: remove embedded worktree and local agent state from repo`
-- `8c7e881 Merge pull request #144 from Yeachan-Heo/feat/omc-omx-hooks-dev`
+- `c4eb931 Bring 0.6.0 onto main so release consumers can use the provider-native hook path`
+- `66ba2a2 Prepare 0.6.0 so provider-native hooks can ship cleanly`
+- `a539942 omx(team): auto-checkpoint worker-2 [unknown]`
+- `adf39fe omx(team): auto-checkpoint worker-2 [unknown]`
+- `5556636 omx(team): auto-checkpoint worker-2 [unknown]`
+- `26f2124 omx(team): auto-checkpoint worker-2 [unknown]`
 
 ## 확인한 원본 구조
 
@@ -33,7 +33,6 @@
 - `deploy/`
 - `dist-workspace.toml`
 - `docs/`
-- `hooks/`
 - `install.sh`
 - `integrations/`
 - `LICENSE`
@@ -54,4 +53,23 @@
 
 ## 변경 파일 샘플
 
-- 변경 파일 없음
+- `CHANGELOG.md`
+- `Cargo.lock`
+- `Cargo.toml`
+- `README.md`
+- `docs/canonical-contract-cleanup.md`
+- `docs/event-contract-v1.md`
+- `docs/live-verification.md`
+- `docs/native-event-contract.md`
+- `hooks/omc/clawhip-session-init.mjs`
+- `hooks/omc/clawhip-session-stop.mjs`
+- `hooks/omx/clawhip-session-init.mjs`
+- `hooks/omx/clawhip-session-stop.mjs`
+- `integrations/omx/README.md`
+- `integrations/omx/clawhip-hook.mjs`
+- `integrations/omx/clawhip-sdk.mjs`
+- `integrations/omx/install-hook.sh`
+- `skills/omc/SKILL.md`
+- `skills/omc/create.sh`
+- `skills/omc/prompt.sh`
+- `skills/omc/tail.sh`

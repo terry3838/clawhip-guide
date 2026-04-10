@@ -2,9 +2,9 @@
 
 - source repo: `https://github.com/Yeachan-Heo/clawhip.git`
 - previous synced commit: `f22fb28a61051798dababea058045ad578a6a8df`
-- current synced commit: `f22fb28a61051798dababea058045ad578a6a8df`
-- sync mode: `no-change`
-- impact labels: 일반 변경
+- current synced commit: `c4eb931bcd2c4cb3cd5fbd7d71601b44954b9043`
+- sync mode: `update`
+- impact labels: README/소개, 설치/설정, CLI/명령어, 문서 구조, 스킬/플러그인, 소스코드, 테스트/검증
 - guide repo: `clawhip-guide`
 
 ## 원본 한줄 요약
@@ -13,14 +13,14 @@
 
 ## recent upstream commits
 
-- `f22fb28 Merge remote-tracking branch 'origin/dev'`
-- `04d3335 chore: prepare 0.5.4 release`
-- `4f57245 Merge remote-tracking branch 'origin/dev'`
-- `d5e4f70 Merge pull request #149 from Yeachan-Heo/clawhip-issue-148-clean-embedded-state`
-- `931cf47 fix: remove embedded worktree and local agent state from repo`
-- `8c7e881 Merge pull request #144 from Yeachan-Heo/feat/omc-omx-hooks-dev`
-- `8a842dc fix: satisfy fmt and clippy for native hooks launch PR`
-- `3ac8e01 fix: custom event channel takes precedence over route/default channel (#145)`
+- `c4eb931 Bring 0.6.0 onto main so release consumers can use the provider-native hook path`
+- `66ba2a2 Prepare 0.6.0 so provider-native hooks can ship cleanly`
+- `a539942 omx(team): auto-checkpoint worker-2 [unknown]`
+- `adf39fe omx(team): auto-checkpoint worker-2 [unknown]`
+- `5556636 omx(team): auto-checkpoint worker-2 [unknown]`
+- `26f2124 omx(team): auto-checkpoint worker-2 [unknown]`
+- `3ae80a1 omx(team): auto-checkpoint worker-2 [unknown]`
+- `b06cc87 omx(team): auto-checkpoint worker-2 [unknown]`
 
 ## top-level structure
 
@@ -33,7 +33,6 @@
 - `deploy/`
 - `dist-workspace.toml`
 - `docs/`
-- `hooks/`
 - `install.sh`
 - `integrations/`
 - `LICENSE`
@@ -47,7 +46,26 @@
 
 ## changed files
 
-- 변경 파일 없음
+- `CHANGELOG.md`
+- `Cargo.lock`
+- `Cargo.toml`
+- `README.md`
+- `docs/canonical-contract-cleanup.md`
+- `docs/event-contract-v1.md`
+- `docs/live-verification.md`
+- `docs/native-event-contract.md`
+- `hooks/omc/clawhip-session-init.mjs`
+- `hooks/omc/clawhip-session-stop.mjs`
+- `hooks/omx/clawhip-session-init.mjs`
+- `hooks/omx/clawhip-session-stop.mjs`
+- `integrations/omx/README.md`
+- `integrations/omx/clawhip-hook.mjs`
+- `integrations/omx/clawhip-sdk.mjs`
+- `integrations/omx/install-hook.sh`
+- `skills/omc/SKILL.md`
+- `skills/omc/create.sh`
+- `skills/omc/prompt.sh`
+- `skills/omc/tail.sh`
 
 ## README excerpt
 
@@ -81,95 +99,95 @@ Then OpenClaw should:
 - start the daemon
 - run live verification for issue / PR / git / tmux / install flows
 
-## What shipped in v0.4.0
+## What shipped in v0.3.0
 
-- **Install lifecycle polish** — repo-local installs, `clawhip install`, `clawhip update`, and `clawhip uninstall` are documented and aligned for clone-local operator workflows.
-- **Optional GitHub support prompt** — interactive install flows can offer an explicit opt-in GitHub star prompt, with `--skip-star-prompt` and `CLAWHIP_SKIP_STAR_PROMPT=1` available on both installer surfaces.
-- **Filesystem memory scaffolds** — `clawhip memory init` and `clawhip memory status` bootstrap and inspect the filesystem-offloaded memory layout for repos and workspaces.
-- **Native session contract polish** — OMC/OMX payload normalization now prefers the lower-noise `session.*` route family while keeping legacy `agent.*` compatibility.
-- **Config compatibility** — `[providers.discord]` remains the preferred config surface, while legacy `[discord]` still loads.
+- **Typed event model** — incoming events are normalized and validated into typed envelopes before dispatch.
+- **Multi-delivery router** — one event can resolve to zero, one, or many deliveries instead of stopping at the first match.
+- **Source extraction** — git, GitHub, and tmux monitoring now run as explicit sources feeding the daemon queue.
+- **Sink/render split** — rendering is separated from transport; v0.3.0 ships with the Discord sink and default renderer.
+- **Config compatibility** — `[providers.discord]` is the preferred config surface, while legacy `[discord]` still loads.
 
-See [`ARCHITECTURE.md`](ARCHITECTURE.md) for the release architecture that ships in v0.4.0.
+See [`ARCHITECTURE.md`](ARCHITECTURE.md) for the release architecture that ships in v0.3.0.
 
-## Good to use together
+## Provider-native hooks for Codex + Claude
 
-clawhip pairs well with coding session tools that run in tmux:
+clawhip no longer treats provider-specific launch wrappers as the public integration surface.
+Codex and Claude own session launch plus hook registration; clawhip stays the routing,
+normalization, and delivery layer.
 
-### [OMX (oh-my-codex)](https://github.com/Yeachan-Heo/oh-my-codex)
+Shared v1 hook events:
 
-OpenAI Codex wrapper with auto-monitoring. Launch monitored coding sessions:
+- `SessionStart`
+- `PreToolUse`
+- `PostToolUse`
+- `UserPromptSubmit`
+- `Stop`
 
-```bash
-clawhip tmux new -s issue-123 \
-  --channel YOUR_CHANNEL_ID \
-  --mention "<@your-user-id>" \
-  --keywords "error,PR created,complete" \
-  -- 'source ~/.zshrc && omx --madmax'
-
-# or attach monitoring to an existing tmux session
-clawhip tmux watch -s issue-123 \
-  --channel YOUR_CHANNEL_ID \
-  --mention "<@your-user-id>" \
-  --keywords "error,PR created,complete"
-
-# inspect active daemon-known watches later
-clawhip tmux list
-```
-
-See [`skills/omx/`](skills/omx/) for ready-to-use scripts.
-Recommended default clawhip + OMX setup: install the native bridge from [`integrations/omx/`](integrations/omx/) and forward the frozen hook envelope via `clawhip omx hook` when the CLI is available, with `POST /api/omx/hook` as the daemon fallback.
-Native OMC/OMX routing now prefers the normalized [`session.*` contract](docs/native-event-contract.md); legacy `agent.*` wrapper emits remain supported for compatibility only.
-
-### [OMC (oh-my-claudecode)](https://github.com/Yeachan-Heo/oh-my-claudecode)
-
-Claude Code wrapper with auto-monitoring. Launch monitored coding sessions:
+Local ingress for sample payloads and manual verification:
 
 ```bash
-clawhip tmux new -s issue-456 \
-  --channel YOUR_CHANNEL_ID \
-  --mention "<@your-user-id>" \
-  --keywords "error,PR created,complete" \
-  -- 'source ~/.zshrc && omc --openclaw --madmax'
+clawhip native hook --provider codex --file payload.json
+clawhip native hook --provider claude --file payload.json
+cat payload.json | clawhip native hook --provider codex
 ```
 
-See [`skills/omc/`](skills/omc/) for ready-to-use scripts.
-Direct Slack/Discord notifications inside OMC/OMX should be treated as deprecated; emit native events and let clawhip own routing, mention policy, and formatting.
+Recommended installation model:
 
-#### Gajae operator setup → verify → fix
+- install provider-native hooks at project or global scope
+- keep provider config in the provider-owned config files
+- keep routing metadata in `.clawhip/project.json`
+- use `.clawhip/hooks/` only for additive augmentation such as frontmatter or recent context
 
-For OMC/OMX-integrated setups, clawhip is the source of truth for routing doctrine and troubleshooting. Keep session skills focused on launch mechanics, then use clawhip docs for the operational rails:
+clawhip still pairs well with tmux when you want keyword/stale monitoring, but tmux is now
+optional and no longer the primary hook-registration surface.
 
-- quick entrypoint: this README section
-- detailed OMX runbook: [`integrations/omx/README.md`](integrations/omx/README.md)
-- native routing/reference contract: [`docs/native-event-contract.md`](docs/native-event-contract.md)
+## Recipes
 
-**Setup**
-1. Confirm the daemon you plan to use is the one you expect:
-   ```bash
-   clawhip --version
-   clawhip status
-   ```
-2. For OMX, install the native hook bridge into the target workspace, then validate it:
-   ```bash
-   ./integrations/omx/install-hook.sh /path/to/repo/.omx/hooks
-   omx hooks validate
-   omx hooks test
-   ```
-3. Add an explicit native session route. Use `event = "session.*"` and filter on `repo_name`, not `repo`:
-   ```toml
-   [[routes]]
-   event = "session.*"
-   filter = { tool = "omx", repo_name = "clawhip" }
-   channel = "1480171113253175356"
-   format = "compact"
-   ```
-   For OMC-native session traffic, keep the same event family and switch the tool filter to `omc` when needed.
-4. Leave `[defaults].channel` configured only as a fallback safety net, not as your primary session-routing policy.
+### Dev-channel follow-up cron for Clawdbot
 
-**Verify**
-- Trigger a real OMC/OMX session event and confirm it lands in the intended route channel.
-- If the event lands in the default channel instead, treat that as a route miss first.
-- If `clawhip cron run` is part of your operator flow, verify `[[cron.jobs]]` exists before treating the command as meaningful.
+One practical pattern is:
 
-**Fix**
+```text
+system cron -> clawhip send -> Discord dev channel -> Clawdbot follows up on open PRs/issues
+```
+
+This works well when you want a lightweight scheduler that nudges your dev channels every 30 minutes without keeping a gateway/LLM session open just for reminders.
+
+Example follow-up script:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+# dev-followup.sh
+# Send a periodic follow-up to active dev channels.
+
+CHANNELS=(
+  "1480171113253175356|clawhip"
+  "1480171113253175357|gaebal-gajae-api"
+  "1480171113253175358|worker-ops"
+)
+
+MENTION="<@1465264645320474637>"
+
+for entry in "${CHANNELS[@]}"; do
+  IFS='|' read -r channel_id project_name <<< "$entry"
+
+  clawhip send \
+    --channel "$channel_id" \
+    --message "🔄 **[$project_name] Dev follow-up** $MENTION — check open PRs/issues, review open blockers, merge anything ready, and continue any stalled work."
+done
+```
+
+You can also send one-off nudges manually:
+
+```bash
+clawhip send \
+  --channel 1480171113253175356 \
+  --message "🔄 **[clawhip] Dev follow-up** <@1465264645320474637> — check open PRs/issues, review blockers, and continue anything stalled."
+
+clawhip send \
+  --channel 1480171113253175357 \
+  --message "🔄 **[gaebal-gajae-api] PR sweep** <@1465264645320474637> — review open PRs, merge anything ready, and post blockers on anything stuck."
+```
 ```
