@@ -1,10 +1,10 @@
 # Upstream Snapshot — clawhip
 
 - source repo: `https://github.com/Yeachan-Heo/clawhip.git`
-- previous synced commit: `c4eb931bcd2c4cb3cd5fbd7d71601b44954b9043`
+- previous synced commit: `f983e1163f52c976fdfb022dbaefca02019b5237`
 - current synced commit: `f983e1163f52c976fdfb022dbaefca02019b5237`
-- sync mode: `update`
-- impact labels: README/소개, 설치/설정, CLI/명령어, 스킬/플러그인, 소스코드, 테스트/검증
+- sync mode: `no-change`
+- impact labels: 일반 변경
 - guide repo: `clawhip-guide`
 
 ## 원본 한줄 요약
@@ -46,26 +46,7 @@
 
 ## changed files
 
-- `.github/workflows/release.yml`
-- `.gitignore`
-- `CHANGELOG.md`
-- `Cargo.lock`
-- `Cargo.toml`
-- `README.md`
-- `skills/omc/SKILL.md`
-- `skills/omx/SKILL.md`
-- `src/binding_verify.rs`
-- `src/cli.rs`
-- `src/config.rs`
-- `src/cron.rs`
-- `src/daemon.rs`
-- `src/discord.rs`
-- `src/dispatch.rs`
-- `src/hooks/mod.rs`
-- `src/hooks/prompt_deliver.rs`
-- `src/main.rs`
-- `src/native_hooks.rs`
-- `src/provenance.rs`
+- 변경 파일 없음
 
 ## README excerpt
 
