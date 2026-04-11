@@ -1,403 +1,107 @@
 # clawhip 학습 가이드
 
-> *events in, messages out.*
+> event를 받아, 검증하고, 라우팅하고, 사람이 읽을 운영 메시지로 보내는 daemon-first notification runtime
 
-clawhip은 **daemon-first notification router** 입니다. Git, GitHub, tmux, OMC/OMX 같은 운영 이벤트를 받아 **typed event pipeline** 으로 정규화하고, router → renderer → sink 흐름으로 Discord/Slack 같은 채널에 전달합니다.
+`clawhip`은 단순 Discord 알림 스크립트가 아니에요. 지금 기준의 clawhip은 **provider-native hook, route-aware delivery, live binding verification, release preflight**까지 포함한 운영 런타임으로 읽는 편이 맞아요.
 
-이 가이드는 원본 저장소 `clawhip`을 직접 대조해서, 설치법만이 아니라 **왜 이 도구가 필요한지 / 내부에서 무엇이 어떻게 움직이는지 / 실제 운영에선 어떻게 써야 하는지**를 학습용으로 다시 정리한 문서입니다.
+이 가이드는 upstream `README.md`, `CHANGELOG.md`, `Cargo.toml`, top-level 구조를 다시 읽어서, **무엇이 핵심인지 / 무엇이 최근에 바뀌었는지 / 어디부터 읽어야 덜 헷갈리는지**를 학습용으로 재구성해요.
 
-> 버전 기준
-> - upstream 확인 커밋: `098ecf6b01d7`
-> - Cargo package version: `0.5.0`
-> - 중요한 해석 포인트:
->   - README / Cargo.toml 기준 최신 릴리스 축은 `v0.5.0`
->   - `ARCHITECTURE.md`는 아직 `v0.4.0` 기준 설명이 남아 있어서, 학습 시 **문서 버전 드리프트**를 감안해야 함
+## 버전 기준
 
----
+- upstream 기준 커밋: `f983e11`
+- crate version: `0.6.6`
+- 이번에 꼭 반영한 변화
+  - `clawhip config verify-bindings`
+  - `clawhip setup --bind ... --expect-name ...`
+  - `channel_name` 힌트 필드
+  - `clawhip release preflight`
 
-## clawhip을 한 문장으로 말하면
+## clawhip을 한 문장으로 보면
 
-clawhip은 **“이벤트를 사람이 읽기 쉬운 운영 메시지로 바꿔 채널에 안정적으로 보내는 라우팅 런타임”** 이다.
+**Git/GitHub/tmux/provider hook에서 들어온 운영 이벤트를 typed contract로 정규화하고, route 정책에 따라 Discord 같은 채널로 안전하게 전달하는 daemon-first router**예요.
 
-조금 더 풀면:
+즉, 핵심은 세 가지예요.
 
-- **daemon-first** — 사용자가 매번 직접 전송하지 않아도, 백그라운드 데몬이 계속 살아서 처리한다
-- **typed event pipeline** — 들어온 입력을 내부 event contract로 정규화한다
-- **router / renderer / sink 분리** — 어디로 보낼지, 어떻게 그릴지, 어떤 채널로 전달할지를 나눠서 관리한다
-- **운영 통합 지향** — Git/GitHub/tmux/OMC/OMX/OpenClaw 같은 운영 표면과 자연스럽게 붙는다
+1. 입력을 이벤트로 통일해요.
+2. 라우팅과 렌더링을 분리해요.
+3. 실제 운영에서 잘못된 바인딩과 릴리즈 실수를 미리 막아요.
 
-즉 “Discord 알림 보내는 스크립트”가 아니라, **운영 이벤트 전달 계층**에 가깝다.
+## 왜 지금 다시 읽어야 하나
 
----
+### 1. 설치보다 검증이 더 중요해졌어요
 
-## clawhip이 해결하는 문제
+최근 clawhip은 설치 성공보다 **실제 바인딩이 맞는지**를 더 강하게 확인해요.
 
-실제 운영에서는 이런 문제가 자주 생긴다.
+- `clawhip config verify-bindings`는 현재 config의 channel ID가 실제 Discord 상태와 맞는지 점검해요.
+- drift가 있으면 non-zero로 끝나서 CI나 운영 점검에 바로 넣을 수 있어요.
 
-- git commit, PR 변경, tmux 에러, 세션 완료 같은 이벤트가 여기저기 흩어져 있음
-- 각 도구가 직접 Slack/Discord를 쏘면 포맷도 들쭉날쭉하고 mention 정책도 제각각임
-- 특정 repo / issue / worker / tmux session 에 대해서만 라우팅하고 싶은데 필터가 불안정함
-- 봇/에이전트가 직접 메시지를 보내면 운영 로직과 delivery 로직이 뒤엉킴
+### 2. `setup --bind`가 이제 더 안전해졌어요
 
-clawhip은 이걸 이렇게 정리한다.
+`clawhip setup --bind REPO=CHANNEL_ID --expect-name REPO=NAME`는
+그냥 값만 쓰지 않고, **실제 채널을 Discord에서 조회한 뒤** 이름까지 맞는지 보고 저장해요.
 
-1. **입력은 이벤트로 통일**
-2. **이벤트는 typed contract로 정규화**
-3. **라우팅은 clawhip이 전담**
-4. **포맷/mention/채널 정책도 clawhip이 전담**
-5. 상위 런타임(OMC/OMX/OpenClaw)은 **이벤트만 내보내면 됨**
+즉 “channel id만 맞으면 됨”이 아니라,
+**repo → channel 라우팅을 live state 기준으로 검증한 뒤 쓴다**가 현재 철학이에요.
 
-이게 핵심 가치다.
+### 3. `channel_name`은 장식이 아니라 운영 힌트예요
 
----
+새 `channel_name`은 강제 필드는 아니지만,
+`[[routes]]`, `[defaults]`, `[[monitors.git.repos]]`, `[[monitors.tmux.sessions]]`에서
+사람이 설정을 읽고 drift를 찾는 속도를 높여줘요.
 
-## 핵심 개념 6개
+### 4. release preflight가 운영 루프에 들어왔어요
 
-### 1. daemon-first
+`clawhip release preflight`는 `Cargo.toml`, `Cargo.lock`, `CHANGELOG`, tag 정합성을 확인해요.
+즉 지금의 clawhip은 runtime뿐 아니라 **release hygiene**까지 공식 표면으로 가져왔어요.
 
-사용자가 매번 CLI로 수동 전송하지 않아도, daemon이 계속 떠 있으면서 이벤트를 받아 처리한다.
+## 추천 읽기 순서
 
-### 2. typed event pipeline
+1. `sections/01-overview.md`
+2. `sections/02-install.md`
+3. `sections/04-routing.md`
+4. `sections/05-operations.md`
+5. `02-glossary.md`
+6. upstream `README.md`, `CHANGELOG.md`
 
-외부 입력을 그대로 쓰지 않고, 내부적으로 의미가 정리된 event family로 변환해서 처리한다.
+더 깊게 보려면:
+- `01_Foundations/02-설치와-첫-실행.md`
+- `02_Runtime-Internals/02-이벤트와-라우팅.md`
+- `03_Operations/03-라이브-검증.md`
 
-예:
-- `git.commit`
-- `github.issue-opened`
-- `github.pr-status-changed`
-- `tmux.keyword`
-- `session.started`
-- `session.finished`
-
-### 3. extracted sources
-
-이벤트 생산이 source 모듈로 분리되어 있다.
-
-- git source
-- GitHub source
-- tmux source
-
-### 4. router / renderer / sink split
-
-- **router** — 어떤 이벤트를 어디로 보낼지 결정
-- **renderer** — 사람에게 보일 메시지 형태로 바꿈
-- **sink** — 실제 Discord/Slack 전송
-
-### 5. native session contract
-
-OMC/OMX 같은 상위 런타임에서 오는 이벤트는 이제 `agent.*`보다 `session.*` 계열이 권장된다.
-
-### 6. live verification
-
-설치만 됐다고 끝이 아니다. issue / PR / git / tmux / install 흐름이 실제로 채널까지 가는지 **실제 이벤트로 검증**하는 운영 철학이 강하다.
-
----
-
-## clawhip이 특히 잘 맞는 조합
-
-원본 README가 강하게 밀고 있는 조합은 이거다.
-
-### 1) OMC / OMX + tmux
-
-예시:
-
-```bash
-clawhip tmux new -s issue-123 \
-  --channel YOUR_CHANNEL_ID \
-  --mention "<@your-user-id>" \
-  --keywords "error,PR created,complete" \
-  -- 'source ~/.zshrc && omx --madmax'
-```
-
-또는:
-
-```bash
-clawhip tmux watch -s issue-123 \
-  --channel YOUR_CHANNEL_ID \
-  --mention "<@your-user-id>" \
-  --keywords "error,PR created,complete"
-```
-
-의미:
-- 세션 시작은 OMC/OMX가 함
-- 감시/알림은 clawhip이 함
-- 포맷/mention/채널 정책도 clawhip이 맡음
-
-### 2) cron → clawhip send → Discord dev channel → bot follow-up
-
-원본 README의 recipe 핵심은, 스케줄링과 라우팅과 액션을 분리하는 것이다.
-
-```text
-system cron -> clawhip send -> Discord dev channel -> Clawdbot/OpenClaw follow-up
-```
-
-즉:
-- 시간 관리: cron
-- 전달 관리: clawhip
-- 실제 후속 행동: bot/agent
-
-깔끔하다.
-
----
-
-## 최신 버전에서 봐야 할 포인트
-
-README와 Cargo 기준으로 최신은 `0.5.0`이다.
-
-최근 커밋/릴리스 흐름상 학습자가 특히 알아야 할 건:
-
-- **Discord retry resilience** 강화
-- **batched CI notifications** 추가
-- **stable ingress identifiers** 보존 개선
-- **private repo GitHub polling** 수정
-- **native event contract polish**
-
-즉 최근 clawhip은 “새 기능 대폭 추가”보다, **운영 신뢰성 / 안정적 ingress / CI/notification robustness** 쪽으로 성숙해지고 있다.
-
----
-
-## 설치 표면 이해
-
-clawhip은 설치 경로가 여러 개다.
-
-### 1. crates.io
-
-```bash
-cargo install clawhip
-```
-
-Rust toolchain이 있는 사람에게 가장 직접적이다.
-
-### 2. prebuilt installer
-
-```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Yeachan-Heo/clawhip/releases/latest/download/clawhip-installer.sh | sh
-```
-
-Rust 없이 설치하기 좋은 경로다.
-
-### 3. repo-local install
-
-```bash
-./install.sh
-./install.sh --systemd
-```
-
-이건 clone-local operator workflow에 특히 맞는다.
-
-### 4. runtime lifecycle commands
-
-```bash
-clawhip install
-clawhip update --restart
-clawhip uninstall
-```
-
-이 표면은 단순 설치보다, **운영 lifecycle** 전체를 다루는 표면으로 보는 게 맞다.
-
----
-
-## 설치 후 제일 먼저 이해해야 하는 명령
-
-```bash
-clawhip                 # start daemon
-clawhip status          # daemon health
-clawhip send ...        # custom event thin client
-clawhip github ...      # github thin client
-clawhip git ...         # git thin client
-clawhip agent ...       # legacy/native lifecycle emit
-clawhip tmux ...        # tmux wrapper / watch / alert surface
-clawhip plugin list     # installed plugins 확인
-clawhip memory init     # memory scaffold 생성
-clawhip memory status   # memory scaffold 상태 확인
-```
-
-학습자는 이걸 기능 목록으로 외우기보다, 아래 4분류로 보는 게 좋다.
-
-| 분류 | 명령 |
-|------|------|
-| daemon/lifecycle | `clawhip`, `status`, `install`, `update`, `uninstall` |
-| thin client ingress | `send`, `github`, `git`, `agent` |
-| monitoring wrapper | `tmux` |
-| runtime scaffolds | `plugin`, `memory` |
-
----
-
-## 내부 구조를 어떻게 읽어야 하나
-
-원본 repo에서 중요한 디렉토리는 아래다.
-
-| 경로 | 의미 |
-|------|------|
-| `src/main.rs` | daemon 진입점 |
-| `src/cli.rs` | CLI 표면 |
-| `src/daemon.rs` | daemon 실행 계층 |
-| `src/dispatch.rs` | dispatcher |
-| `src/router.rs` | route resolution |
-| `src/render/` | message rendering |
-| `src/sink/` | Discord/Slack delivery |
-| `src/source/` | git/GitHub/tmux sources |
-| `src/event/` | typed event / compat normalization |
-| `src/lifecycle.rs` | install/update/uninstall/status 관련 lifecycle |
-| `src/memory.rs` | filesystem memory scaffold 관련 |
-| `plugins/` | tool-specific shell bridge |
-| `integrations/` | git/tmux integration scripts |
-| `docs/` | contract/runbook/architecture 문서 |
-| `skills/` | OMC/OMX/memory-offload skill assets |
-
-### 읽기 추천 순서
-
-1. `README.md`
-2. `ARCHITECTURE.md`
-3. `docs/native-event-contract.md`
-4. `docs/live-verification.md`
-5. `docs/memory-offload-guide.md`
-6. `src/cli.rs`
-7. `src/main.rs` → `src/daemon.rs`
-8. `src/source/*` → `src/dispatch.rs` → `src/router.rs` → `src/render/*` → `src/sink/*`
-
----
-
-## 학습자가 꼭 알아야 하는 문서 드리프트
-
-여기서 헷갈릴 수 있는 포인트가 하나 있다.
-
-- `Cargo.toml` version: `0.5.0`
-- 최근 커밋도 `release: clawhip v0.5.0`
-- 그런데 `ARCHITECTURE.md` 제목은 아직 **v0.4.0** 기준 설명
-
-이 말은:
-- 아키텍처의 큰 구조는 여전히 유효할 가능성이 높지만
-- 세부 운영 포인트는 README / Cargo / 최근 커밋을 더 우선해야 한다는 뜻이다
-
-그래서 이 guide는 **아키텍처 설명은 참고하되, 현재 동작 이해는 README와 최근 릴리스 문맥 기준**으로 정리한다.
-
----
-
-## 운영 관점에서 중요한 철학
-
-### 1. routing/formatting/delivery는 clawhip이 맡아야 한다
-
-원본 README도 말한다.
-
-> Direct Slack/Discord notifications inside OMC/OMX should be treated as deprecated; emit native events and let clawhip own routing, mention policy, and formatting.
-
-이게 아주 중요하다.
-
-즉:
-- 상위 런타임이 직접 채널에 메시지 쏘지 말고
-- 이벤트만 내보내고
-- 채널/mention/format 정책은 clawhip에 위임하라는 철학이다
-
-### 2. live verification이 설치만큼 중요하다
-
-clawhip은 “설치됨”보다 “실제 preset event family가 다 흐른다”가 더 중요하다.
-
-### 3. memory offload도 clawhip의 운영 철학 일부다
-
-`MEMORY.md`를 hot pointer로 두고 상세 기억을 파일 shard로 넘기는 패턴이, 단순 문서 팁이 아니라 하나의 운영 모델로 정리돼 있다.
-
----
-
-## 이 가이드 문서 구성
-
-```text
-clawhip-guide/
-├── README.md
-├── 01-learning-paths.md
-├── 02-glossary.md
-├── 03-repo-blueprint.md
-├── 00_Home/
-├── 01_Foundations/
-├── 02_Runtime-Internals/
-├── 03_Operations/
-├── 04_Labs/
-├── 05_Resources/
-├── sections/
-├── examples/
-└── tools/
-```
-
-### 추천 읽기 순서
-
-1. `README.md` — 전체 그림
-2. `01-learning-paths.md` — 내 목적에 맞는 학습 순서 결정
-3. `02-glossary.md` — 용어 모를 때 즉시 참조
-4. `01_Foundations/` — 입문
-5. `02_Runtime-Internals/` — 구조
-6. `03_Operations/` — 실전 운영
-7. `04_Labs/` — 직접 검증
-
----
-
-## 가장 짧은 실습 루프
-
-### 실습 1 — daemon 상태 보기
+## 가장 현실적인 첫 성공 루프
 
 ```bash
 clawhip status
+clawhip config verify-bindings
+clawhip setup --bind oh-my-codex=1480171106324189335 --expect-name oh-my-codex=omx-dev
+clawhip release preflight
 ```
 
-### 실습 2 — custom event 보내기
+이 루프가 의미하는 건 이거예요.
 
-```bash
-clawhip send --channel YOUR_CHANNEL_ID --message "hello from clawhip"
-```
+- daemon이 살아 있는지 본다
+- 현재 route binding drift를 본다
+- repo → channel 매핑을 live verify 후 저장한다
+- 릴리즈 직전 정합성을 확인한다
 
-### 실습 3 — tmux watch 붙이기
+## 자주 생기는 오해
 
-```bash
-clawhip tmux watch -s issue-123 \
-  --channel YOUR_CHANNEL_ID \
-  --mention "<@your-user-id>" \
-  --keywords "error,complete"
-```
+- **오해 1: clawhip은 Discord 전송 CLI다**
+  - 아니에요. 지금 기준 핵심은 typed event pipeline + route/delivery runtime이에요.
 
-### 실습 4 — native contract 문서 읽기
+- **오해 2: tmux가 본체다**
+  - 아니에요. tmux는 여전히 중요하지만, provider-native hook과 route/runtime 계층이 더 중심이에요.
 
-- `docs/native-event-contract.md`
+- **오해 3: setup이 끝나면 운영 준비도 끝난다**
+  - 아니에요. binding verification과 release preflight까지 포함해야 현재 운영 흐름에 맞아요.
 
-### 실습 5 — live verification runbook 보기
+## 이 가이드가 특히 도와주는 사람
 
-- `docs/live-verification.md`
-- `scripts/live-verify-default-presets.sh`
+- Discord 운영 채널에 repo별 알림을 안정적으로 붙이려는 사람
+- OMC/OMX/OpenClaw 이벤트를 clawhip 쪽으로 정리하려는 사람
+- route drift, binding mismatch, 릴리즈 전 정합성까지 같이 다루려는 운영자
 
----
+## 다음 행동
 
-## 관련 원본 자료
-
-- GitHub: <https://github.com/Yeachan-Heo/clawhip>
-- crates.io: <https://crates.io/crates/clawhip>
-- `ARCHITECTURE.md`
-- `docs/native-event-contract.md`
-- `docs/live-verification.md`
-- `docs/memory-offload-architecture.md`
-- `docs/memory-offload-guide.md`
-
-<!-- GUIDE_SYNC:START -->
-## 자동 동기화 상태
-
-- origin repo: `clawhip`
-- latest source commit: `f983e1163f52`
-- sync mode: `no-change`
-- 영향 분류: 일반 변경
-
-### 이번 반영 포인트
-
-이번 싸이클에서는 origin 변경이 없어 guide 본문은 유지했고, 동기화 기준점만 재확인했습니다.
-
-### 최근 upstream 커밋
-
-- `f983e11 Preserve the 0.6.6 release state while finishing the dev->main merge`
-- `63221e1 release: 0.6.6`
-- `251dda5 Merge pull request #199 from Yeachan-Heo/clawhip-issue-198-binding-verify`
-- `8ab8436 fix(setup): hard-fail malformed --expect-name entries (closes #198 review)`
-- `3025a36 style: cargo fmt`
-- `ceb93e2 feat(setup): verify Discord channel bindings against live server (closes #198)`
-
-### 변경 파일 샘플
-
-- 이번 싸이클에서는 신규 변경 파일이 없습니다.
-
-> 이 블록은 guide sync가 자동 갱신합니다.
-<!-- GUIDE_SYNC:END -->
+- 입문이면 `01-learning-paths.md`부터 읽고, 바로 `clawhip config verify-bindings`를 돌려 보세요.
+- 운영 중이면 `sections/05-operations.md`와 `03_Operations/03-라이브-검증.md`를 먼저 보세요.
