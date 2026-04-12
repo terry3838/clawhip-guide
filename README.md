@@ -105,3 +105,31 @@ clawhip release preflight
 
 - 입문이면 `01-learning-paths.md`부터 읽고, 바로 `clawhip config verify-bindings`를 돌려 보세요.
 - 운영 중이면 `sections/05-operations.md`와 `03_Operations/03-라이브-검증.md`를 먼저 보세요.
+
+<!-- GUIDE_SYNC:START -->
+## 자동 동기화 상태
+
+- origin repo: `clawhip`
+- latest source commit: `f983e1163f52`
+- sync mode: `no-change`
+- 영향 분류: 일반 변경
+
+### 이번 반영 포인트
+
+이번 싸이클에서는 origin 변경이 없어 guide 본문은 유지했고, 동기화 기준점만 재확인했습니다.
+
+### 최근 upstream 커밋
+
+- `f983e11 Preserve the 0.6.6 release state while finishing the dev->main merge`
+- `63221e1 release: 0.6.6`
+- `251dda5 Merge pull request #199 from Yeachan-Heo/clawhip-issue-198-binding-verify`
+- `8ab8436 fix(setup): hard-fail malformed --expect-name entries (closes #198 review)`
+- `3025a36 style: cargo fmt`
+- `ceb93e2 feat(setup): verify Discord channel bindings against live server (closes #198)`
+
+### 변경 파일 샘플
+
+- 이번 싸이클에서는 신규 변경 파일이 없습니다.
+
+> 이 블록은 guide sync가 자동 갱신합니다.
+<!-- GUIDE_SYNC:END -->
