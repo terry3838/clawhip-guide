@@ -9,9 +9,9 @@
 
 ## 이번 싸이클 판단
 
-- sync mode: `update`
-- impact labels: README/소개, CLI/명령어, 문서 구조, 스킬/플러그인, 소스코드
-- 판단: origin 변경 파일을 기준으로 guide 문서의 관련 섹션을 다시 읽고 반영했습니다. 핵심 영향 영역: README/소개, CLI/명령어, 문서 구조, 스킬/플러그인, 소스코드.
+- sync mode: `no-change`
+- impact labels: 일반 변경
+- 판단: 이번 싸이클에서는 origin 변경이 없어 guide 본문은 유지했고, 동기화 기준점만 재확인했습니다.
 
 ## 최근 upstream 커밋
 
@@ -53,23 +53,4 @@
 
 ## 변경 파일 샘플
 
-- `CHANGELOG.md`
-- `Cargo.lock`
-- `Cargo.toml`
-- `README.md`
-- `docs/event-contract-v1.md`
-- `docs/live-verification.md`
-- `docs/native-event-contract.md`
-- `integrations/omx/README.md`
-- `scripts/internal-pr-format-gate.sh`
-- `skills/omc/SKILL.md`
-- `skills/omx/SKILL.md`
-- `src/cli.rs`
-- `src/cron.rs`
-- `src/daemon.rs`
-- `src/dispatch.rs`
-- `src/hooks/mod.rs`
-- `src/hooks/prompt_deliver.rs`
-- `src/native_hooks.rs`
-- `src/router.rs`
-- `src/source/github.rs`
+- 변경 파일 없음

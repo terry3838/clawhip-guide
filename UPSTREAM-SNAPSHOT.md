@@ -1,10 +1,10 @@
 # Upstream Snapshot — clawhip
 
 - source repo: `https://github.com/Yeachan-Heo/clawhip.git`
-- previous synced commit: `f983e1163f52c976fdfb022dbaefca02019b5237`
+- previous synced commit: `ff3ba32dc22a143d53bec40870d3b52b2fa11a2b`
 - current synced commit: `ff3ba32dc22a143d53bec40870d3b52b2fa11a2b`
-- sync mode: `update`
-- impact labels: README/소개, CLI/명령어, 문서 구조, 스킬/플러그인, 소스코드
+- sync mode: `no-change`
+- impact labels: 일반 변경
 - guide repo: `clawhip-guide`
 
 ## 원본 한줄 요약
@@ -46,26 +46,7 @@
 
 ## changed files
 
-- `CHANGELOG.md`
-- `Cargo.lock`
-- `Cargo.toml`
-- `README.md`
-- `docs/event-contract-v1.md`
-- `docs/live-verification.md`
-- `docs/native-event-contract.md`
-- `integrations/omx/README.md`
-- `scripts/internal-pr-format-gate.sh`
-- `skills/omc/SKILL.md`
-- `skills/omx/SKILL.md`
-- `src/cli.rs`
-- `src/cron.rs`
-- `src/daemon.rs`
-- `src/dispatch.rs`
-- `src/hooks/mod.rs`
-- `src/hooks/prompt_deliver.rs`
-- `src/native_hooks.rs`
-- `src/router.rs`
-- `src/source/github.rs`
+- 변경 파일 없음
 
 ## README excerpt
 
